@@ -8,7 +8,7 @@ import { TrendingUp, Target, Calendar, Award } from "lucide-react";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [userName] = useState("John"); // Mock user data
+  const [userName] = useState(" "); // Mock user data
 
   const stats = [
     {

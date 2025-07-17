@@ -36,6 +36,7 @@ export default function Login() {
         variant: "destructive",
       });
     } else {
+      localStorage.setItem("isAuthenticated", "true");
       toast({
         title: "Welcome back!",
         description: "You've successfully logged in.",
