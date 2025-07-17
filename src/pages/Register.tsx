@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Header } from "@/components/Header";
 import { Dumbbell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -33,16 +34,31 @@ export default function Register() {
       return;
     }
 
-    // Mock registration - in real app, this would call your auth service
-    setTimeout(() => {
-      setIsLoading(false);
-      localStorage.setItem("isAuthenticated", "true");
+    const { error } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        data: {
+          full_name: formData.name,
+        },
+      },
+    });
+
+    setIsLoading(false);
+
+    if (error) {
       toast({
-        title: "Welcome to FitTracker!",
-        description: "Your account has been created successfully.",
+        title: "Error signing up",
+        description: error.message,
+        variant: "destructive",
       });
-      navigate("/dashboard");
-    }, 1000);
+    } else {
+      toast({
+        title: "Account created!",
+        description: "Please check your email to verify your account.",
+      });
+      navigate("/login");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

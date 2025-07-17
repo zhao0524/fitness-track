@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Header } from "@/components/Header";
 import { Dumbbell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -21,24 +22,26 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
-    // Mock authentication - in real app, this would call your auth service
-    setTimeout(() => {
-      setIsLoading(false);
-      if (formData.email && formData.password) {
-        localStorage.setItem("isAuthenticated", "true");
-        toast({
-          title: "Welcome back!",
-          description: "You've successfully logged in.",
-        });
-        navigate("/dashboard");
-      } else {
-        toast({
-          title: "Error",
-          description: "Please enter both email and password.",
-          variant: "destructive",
-        });
-      }
-    }, 1000);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+
+    setIsLoading(false);
+
+    if (error) {
+      toast({
+        title: "Error signing in",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Welcome back!",
+        description: "You've successfully logged in.",
+      });
+      navigate("/dashboard");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
